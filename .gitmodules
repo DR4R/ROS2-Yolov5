@@ -1,0 +1,3 @@
+[submodule "yolov5_pkg/yolov5"]
+	path = yolov5_pkg/yolov5
+	url = https://github.com/kimh060612/yolov5_dr4r.git

@@ -2,7 +2,7 @@ from setuptools import setup
 import glob
 import os
 
-package_name = 'yolov5'
+package_name = 'yolov5_pkg'
 share_dir = 'share/' + package_name
 
 setup(
@@ -24,9 +24,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'img_publisher = yolov5.camera:main',
-            'image_subscriber = yolov5.imageview:main',
-            'yolov5 = yolov5.yolov5:main'
+            'img_publisher = yolov5_pkg.camera:main',
+            'image_subscriber = yolov5_pkg.imageview:main',
+            'yolov5 = yolov5_pkg.yolov5:main'
         ],
     },
 )

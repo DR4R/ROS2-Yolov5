@@ -11,7 +11,7 @@ import os
 import sys
 
 from sensor_msgs.msg import Image
-from yolov5_interface.msg import BoundingBox, BoundingBoxes
+from yolov5_interfaces.msg import BoundingBox, BoundingBoxes
 
 # add yolov5 submodule to path
 FILE = Path(__file__).resolve()
@@ -36,23 +36,34 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class Yolov5(Node):
     def __init__(self):
         super().__init__("yolov5")
-        self.conf_thres = self.get_parameter("confidence_threshold").value
-        self.iou_thres = self.get_parameter("iou_threshold")
-        self.agnostic_nms = self.get_parameter("agnostic_nms")
-        self.max_det = self.get_parameter("maximum_detections")
-        self.classes = self.get_parameter("classes", None)
-        self.view_image = self.get_parameter("view_image")
-        self.line_thickness = self.get_parameter("line_thickness")
+        self.declare_parameter("confidence_threshold", 0.5)
+        self.conf_thres = self.get_parameter("confidence_threshold")._value
+        self.declare_parameter("iou_threshold", 0.45)
+        self.iou_thres = self.get_parameter("iou_threshold")._value
+        self.declare_parameter("agnostic_nms", True)
+        self.agnostic_nms = self.get_parameter("agnostic_nms")._value
+        self.declare_parameter("maximum_detections", 1000)
+        self.max_det = self.get_parameter("maximum_detections")._value
+        self.classes = None
+        self.declare_parameter("view_image", True)
+        self.view_image = self.get_parameter("view_image")._value
+        self.declare_parameter("line_thickness", 3)
+        self.line_thickness = self.get_parameter("line_thickness")._value
         # Initialize weights 
-        weights = self.get_parameter("weights")
+        self.declare_parameter("weights", 'yolov5m.pt')
+        weights = self.get_parameter("weights")._value
         # Initialize model
-        self.device = torch.device(self.get_parameter("device"))
+        self.declare_parameter("device", 'cuda')
+        self.device = torch.device(self.get_parameter("device")._value)
+        self.declare_parameter("optimize", 'vanilla')
         self.optimize_mode = self.get_parameter("optimize")
+        self.declare_parameter("dnn", True)
+        self.declare_parameter("data", 'coco128.yaml')
         self.model = DetectMultiBackend(
             weights, 
             device=self.device, 
-            dnn=self.get_parameter("dnn"), 
-            data=self.get_parameter("data")
+            dnn=self.get_parameter("dnn")._value, 
+            data=self.get_parameter("data")._value
         )
         self.stride, self.names, self.pt, self.jit, self.onnx, self.engine = (
             self.model.stride,
@@ -62,12 +73,15 @@ class Yolov5(Node):
             self.model.onnx,
             self.model.engine
         )
-        
-        self.img_size = [self.get_parameter("inference_size_w"), self.get_parameter("inference_size_h")]
+        self.declare_parameter("inference_size_w", 640)
+        self.declare_parameter("inference_size_h", 640)
+        self.img_size = [self.get_parameter("inference_size_w")._value, self.get_parameter("inference_size_h")._value]
         self.img_size = check_img_size(self.img_size, s=self.stride)
         
         cudnn.benchmark = True  # set True to speed up constant image size inference
         self.model.warmup()  # warmup
+        self.declare_parameter("input_image_topic", 'video_frames')
+        self.declare_parameter("output_topic", 'yolo_res')
         self.input_topic_name = self.get_parameter('input_image_topic')
         self.output_topic_name = self.get_parameter('output_topic')
         
@@ -84,7 +98,7 @@ class Yolov5(Node):
         self.get_logger().info('Receiving video frame')
         current_frame = self.bridge.imgmsg_to_cv2(data)
         im, im0 = self.preprocess(current_frame)
-        im = torch.from_numpy(im).to(self.device) 
+        im = torch.from_numpy(im).to(self.device).float()
         im /= 255
         if len(im.shape) == 3:
             im = im[None]
@@ -107,8 +121,8 @@ class Yolov5(Node):
                 bounding_box = BoundingBox()
                 c = int(cls)
                 # Fill in bounding box message
-                bounding_box.Class = self.names[c]
-                bounding_box.probability = conf 
+                bounding_box.class_id = self.names[c]
+                bounding_box.probability = float(conf) 
                 bounding_box.xmin = int(xyxy[0])
                 bounding_box.ymin = int(xyxy[1])
                 bounding_box.xmax = int(xyxy[2])
@@ -116,11 +130,9 @@ class Yolov5(Node):
                 bounding_boxes.bounding_boxes.append(bounding_box)
 
                 # Annotate the image
-                if self.publish_image or self.view_image:  # Add bbox to image
-                      # integer class
+                if self.view_image:  # Add bbox to image
                     label = f"{self.names[c]} {conf:.2f}"
                     annotator.box_label(xyxy, label, color=colors(c, True))       
-                ### POPULATE THE DETECTION MESSAGE HERE
             # Stream results
             im0 = annotator.result()
             

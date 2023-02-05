@@ -10,7 +10,7 @@ def generate_launch_description():
     param_dir = LaunchConfiguration(
         'param_dir',
         default=os.path.join(
-            get_package_share_directory('yolov5'),
+            get_package_share_directory('yolov5_pkg'),
             'param',
             'yolo_parameters.yaml'
         )
@@ -23,7 +23,7 @@ def generate_launch_description():
     )
     
     camera_node = Node(
-        package='yolov5',
+        package='yolov5_pkg',
         executable='img_publisher',
         name='camera',
         output='screen'
@@ -34,7 +34,7 @@ def generate_launch_description():
     # )
     
     yolo_node = Node(
-        package='yolov5',
+        package='yolov5_pkg',
         executable='yolov5',
         name='detection',
         output='screen'

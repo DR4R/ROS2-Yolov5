@@ -7,7 +7,7 @@
   <maintainer email="kimh060612@naver.com">michael</maintainer>
   <license>TODO: License declaration</license>
 
-  <depend>yolov5_interface</depend>
+  <depend>yolov5_interfaces</depend>
   <depend>std_msgs</depend>
   <depend>cv_bridge</depend>
   <depend>sensor_msgs</depend>
