@@ -1,0 +1,17 @@
+namespace:
+  node_name:
+    ros__parameters:
+      weights: 'yolov5m.pt'
+      data: 'coco128.yaml'
+      confidence_threshold: 0.5
+      iou_threshold: 0.45
+      maximum_detections: 1000
+      device: 'cuda'
+      agnostic_nms: true
+      inference_size_h: 640
+      inference_size_w: 640
+      view_image: true
+      input_image_topic: 'video_frames'
+      output_topic: 'yolo_res'
+      optimize: 'vanilla'
+      line_thickness: 3
