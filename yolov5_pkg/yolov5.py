@@ -13,6 +13,8 @@ import sys
 from sensor_msgs.msg import Image
 from yolov5_interfaces.msg import BoundingBox, BoundingBoxes
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+
 # add yolov5 submodule to path
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0] / 'yolov5'
@@ -45,7 +47,7 @@ class Yolov5(Node):
         self.declare_parameter("maximum_detections", 1000)
         self.max_det = self.get_parameter("maximum_detections")._value
         self.classes = None
-        self.declare_parameter("view_image", True)
+        self.declare_parameter("view_image", False)
         self.view_image = self.get_parameter("view_image")._value
         self.declare_parameter("line_thickness", 3)
         self.line_thickness = self.get_parameter("line_thickness")._value

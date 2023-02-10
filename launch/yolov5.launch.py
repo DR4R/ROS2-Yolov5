@@ -29,9 +29,12 @@ def generate_launch_description():
         output='screen'
     )
     
-    # image_show_node = Node(
-        
-    # )
+    image_show_node = Node(
+        package='yolov5_pkg',
+        executable='image_subscriber',
+        name='view',
+        output='screen'
+    )
     
     yolo_node = Node(
         package='yolov5_pkg',
@@ -43,6 +46,6 @@ def generate_launch_description():
     return LaunchDescription([
         params,
         camera_node,
-        # image_show_node,
+        image_show_node,
         yolo_node
     ])

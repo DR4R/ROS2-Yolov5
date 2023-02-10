@@ -10,7 +10,7 @@ namespace:
       agnostic_nms: true
       inference_size_h: 640
       inference_size_w: 640
-      view_image: true
+      view_image: false
       input_image_topic: 'video_frames'
       output_topic: 'yolo_res'
       optimize: 'vanilla'
