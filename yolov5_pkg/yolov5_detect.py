@@ -6,7 +6,6 @@ import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
 from cv_bridge import CvBridge
-from pathlib import Path
 import os
 import sys
 
@@ -16,13 +15,9 @@ from yolov5_interfaces.msg import BoundingBox, BoundingBoxes
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 # add yolov5 submodule to path
-FILE = Path(__file__).resolve()
-ROOT = FILE.parents[0] / 'yolov5'
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))  # add ROOT to PATH
-ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative path
+WORKDIR_PATH = os.environ['ROS_WS']
+sys.path.append(os.path.join(WORKDIR_PATH, 'src/yolov5_pkg/yolov5_pkg/yolov5'))
 
-# import from yolov5 submodules
 from models.common import DetectMultiBackend
 from utils.general import (
     check_img_size,

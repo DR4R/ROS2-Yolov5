@@ -26,7 +26,7 @@ setup(
         'console_scripts': [
             'img_publisher = yolov5_pkg.camera:main',
             'image_subscriber = yolov5_pkg.imageview:main',
-            'yolov5 = yolov5_pkg.yolov5:main'
+            'yolov5 = yolov5_pkg.yolov5_detect:main'
         ],
     },
 )
